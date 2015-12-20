@@ -13,6 +13,14 @@
 		<org.springframework.security-version>4.0.1.RELEASE</org.springframework.security-version>
 		<org.aspectj-version>1.8.1</org.aspectj-version>
 		<org.slf4j-version>1.7.12</org.slf4j-version>
+		
+		    <!-- Jacoco Properties -->
+    <jacoco.version>0.7.4.201502262128</jacoco.version>
+    <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+    <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
+    <sonar.jacoco.itReportPath>${project.basedir}/target/jacoco-it.exec</sonar.jacoco.itReportPath>
+    <sonar.language>java</sonar.language>  
+    
 	</properties>
 	<dependencies>
 		<!-- Spring -->
@@ -212,6 +220,55 @@
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<plugins>
+			
+			        <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>${jacoco.version}</version>
+            <executions>
+                <execution>
+                    <id>prepare-unit-test-agent</id>
+                    <configuration>
+                    </configuration>
+                    <goals>
+                        <goal>prepare-agent</goal>
+                    </goals>
+                </execution>
+                <execution>
+                    <id>jacoco-site</id>
+                    <phase>verify</phase>
+                    <goals>
+                        <goal>report</goal>
+                    </goals>
+                </execution>
+                <execution>
+                    <id>prepare-it-test-agent</id>
+                    <configuration>
+                        <propertyName>jacoco.agent.argLine</propertyName>
+                        <destFile>${sonar.jacoco.itReportPath}</destFile>
+                        <append>true</append>
+                    </configuration>
+                    <goals>
+                        <goal>prepare-agent</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>2.12.4</version>
+            <configuration>
+                <argLine>${jacoco.agent.argLine}</argLine>
+            </configuration>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>integration-test</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
